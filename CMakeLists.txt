@@ -4,21 +4,27 @@ project(ipc)
 set(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_CXX_FLAGS "-g")
 
+SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/build/bin)
+SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/build/lib)
+
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/src)
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/include)
+LINK_DIRECTORIES(/usr/local/lib)
+LINK_DIRECTORIES(/usr/lib64)
+
 
 #find_package(gflags COMPONENTS nothreads_static)
 #find_package(glog COMPONENTS nothreads_static)
 
-LINK_DIRECTORIES(/usr/local/lib)
-LINK_DIRECTORIES(/usr/lib64)
 
 add_executable(ipcv
-        ipc_comm.h
-        ipc_server.cc)
+        src/ipc_comm.h
+        src/ipc_server.cc)
 
 
 add_executable(ipcc
-        ipc_comm.h
-        ipc_client.cc)
+        src/ipc_comm.h
+        src/ipc_client.cc)
 
 TARGET_LINK_LIBRARIES(ipcv rt)
 TARGET_LINK_LIBRARIES(ipcc rt)
