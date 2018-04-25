@@ -134,44 +134,64 @@ int pipe_demo()
      * NOTES: fd[0] is set up for reading, fd[1] is set up for writing
      */
 
-    int pipe_handle[2];
-    if (0 != pipe(pipe_handle))
+    int pipe_write_to_child[2];
+    int pipe_write_to_parent[2];
+    if (0 != pipe(pipe_write_to_child))
     {
-        std::cerr << "Create pipe failed: " << strerror(errno) << " <-- " << getpid() << std::endl;
+        std::cerr << "Create pipe to child failed: " << strerror(errno) << " <-- " << getpid() << std::endl;
+        return  -1;
+    }
+
+    if (0 != pipe(pipe_write_to_parent))
+    {
+        std::cerr << "Create pipe to parent failed: " << strerror(errno) << " <-- " << getpid() << std::endl;
         return  -1;
     }
 
 
-    if (fork())
+    if (fork())   // parent process
     {
-        close(pipe_handle[0]);
+        close(pipe_write_to_child[PIPE_STDIN]);
+        close(pipe_write_to_parent[PIPE_STDOUT]);
 
-        // parent process
-        write(pipe_handle[1], SHM_SVR_TEXT, sizeof(SHM_SVR_TEXT));
+        // write data to child
+        write(pipe_write_to_child[1], SHM_SVR_TEXT, sizeof(SHM_SVR_TEXT));
 
-/*
+
         char pipe_buff[4096] = {0};
-        while (0 == read(pipe_handle[0],pipe_buff, 4096));
+        while (0 == read(pipe_write_to_parent[0],pipe_buff, 4096));
 
-        std::cout << "Read data from pipe in parent: " << getpid() << std::endl;
-        std::cout << pipe_buff << std::endl;
-*/
+        std::cout << "I'm parent, read data from child: " << getpid() << std::endl;
+        std::cout << pipe_buff << std::endl << std::endl;
+
+        getchar();
+
+        std::cout << "I'm parent, exit now... " << getpid() << std::endl;
+        close(pipe_write_to_child[PIPE_STDOUT]);
+        close(pipe_write_to_parent[PIPE_STDIN]);
     }
-    else
+    else        // child process
     {
-        close(pipe_handle[1]);
+        close(pipe_write_to_child[PIPE_STDOUT]);
+        close(pipe_write_to_parent[PIPE_STDIN]);
 
-        // child process
+        // read data from parent
         char pipe_buff[4096] = {0};
-        while (0 == read(pipe_handle[0],pipe_buff, 4096));
+        while (0 == read(pipe_write_to_child[0],pipe_buff, 4096));
 
-        std::cout << "Read data from pipe in child: " << getpid() << std::endl;
-        std::cout << pipe_buff << std::endl;
+        std::cout << "I'm child, read data from parent: " << getpid() << std::endl;
+        std::cout << pipe_buff << std::endl << std::endl;
 
-        // write(pipe_handle[1], SHM_CLT_TEXT, sizeof(SHM_CLT_TEXT));
+        // write data to parent
+        write(pipe_write_to_parent[1], SHM_CLT_TEXT, sizeof(SHM_CLT_TEXT));
+
+        getchar();
+        std::cout << "I'm child, exit now... " << getpid() << std::endl;
+
+
+        close(pipe_write_to_child[PIPE_STDIN]);
+        close(pipe_write_to_parent[PIPE_STDOUT]);
     }
-
-    getchar();
 
     return  0;
 }
