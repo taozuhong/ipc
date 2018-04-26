@@ -17,11 +17,17 @@ find_package(gflags COMPONENTS nothreads_static)
 
 add_executable(ipcv
         src/ipc_comm.h
+        src/ipc_shm.h
+        src/ipc_shm.cc
+        src/ipc_pipe.h
+        src/ipc_pipe.cc
         src/ipc_server.cc)
 
 
 add_executable(ipcc
         src/ipc_comm.h
+        src/ipc_shm.h
+        src/ipc_shm.cc
         src/ipc_client.cc)
 
 TARGET_LINK_LIBRARIES(ipcv rt gflags)
