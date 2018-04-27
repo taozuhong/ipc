@@ -1,25 +1,15 @@
 #include "ipc_shm.h"
 #include "ipc_pipe.h"
+#include "ipc_comm.h"
 
 #define STRIP_FLAG_HELP 1
 #include "gflags/gflags.h"
 
 
 DEFINE_bool(h, false, "Show help");
-DEFINE_bool(pipe, false, "Enter pipe mode");
 DEFINE_bool(shm, false, "Enter share memory mode");
-
-const char *    App_Usage =
-        "./ipcv {OPTIONS} \n\
-\n\
-utils to demo IPC methods\n\
-\n\
-OPTIONS: \n\
--h                Show help \n\
--pipe            Enter pipe mode\n\
--shm             Enter pipe mode\n\
-\n\
-Welcome to contribute and share with your friends.";
+DEFINE_bool(pipe, false, "Enter pipe mode(anony pipe)");
+DEFINE_bool(fifo, false, "Enter fifo mode(named pipe)");
 
 
 int main(int argc, char * argv[]) {
@@ -31,13 +21,21 @@ int main(int argc, char * argv[]) {
         return 0;
     }
 
+    int ret_val = 0;
     if (FLAGS_shm) {
-        share_memory_demo_server();
+        ret_val = share_memory_demo_server();
     }
 
     if (FLAGS_pipe) {
-        anonymous_pipe_demo();
+        ret_val = anonymous_pipe_demo();
     }
+
+    if (FLAGS_fifo)
+    {
+        ret_val = named_pipe_demo_server();
+    }
+
+    return  ret_val;
 }
 
 

@@ -3,4 +3,8 @@
 
 int anonymous_pipe_demo();
 
+int named_pipe_demo_server();
+
+int named_pipe_demo_client();
+
 #endif

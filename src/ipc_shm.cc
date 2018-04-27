@@ -9,7 +9,7 @@
 int share_memory_demo_server()
 {
     // create share memory object
-    int ipc_shm_fd = shm_open(SHM_NAME, O_RDWR | O_CREAT, S_IRWXU);
+    int ipc_shm_fd = shm_open(IPC_SHM_NAME, O_RDWR | O_CREAT, S_IRWXU);
     if (0 > ipc_shm_fd)
     {
         std::cerr << "Create share memory failed: " << strerror(errno) << std::endl;
@@ -34,7 +34,6 @@ int share_memory_demo_server()
     char *  shm_data_add = shm_in_proc + SHM_HEAD_SIZE + SHM_DATA_SIZE;
 
     // set the init state
-    uint64_t shm_sync_flag = SHM_FLAG_LOCK;
     atomic_write<uint64_t>(shm_in_proc, SHM_FLAG_LOCK);
     atomic_write<uint64_t>(shm_in_proc+SHM_HEAD_SIZE, 0ull);
 
@@ -109,7 +108,7 @@ int share_memory_demo_server()
     TARGET_RELEASE:
 
     munmap(shm_in_proc, SHM_SIZE);
-    shm_unlink(SHM_NAME);
+    shm_unlink(IPC_SHM_NAME);
 
     std::cout << "Unmap share memory and release it " << getpid() << std::endl;
 
@@ -120,7 +119,7 @@ int share_memory_demo_server()
 int share_memory_demo_client()
 {
     // create share memory object
-    int ipc_shm_fd = shm_open(SHM_NAME, O_RDWR, S_IRWXU);
+    int ipc_shm_fd = shm_open(IPC_SHM_NAME, O_RDWR, S_IRWXU);
     if (0 > ipc_shm_fd)
     {
         std::cerr << "Create share memory failed: " << strerror(errno) << std::endl;
@@ -143,7 +142,6 @@ int share_memory_demo_client()
     char *  shm_data_add = shm_in_proc + SHM_HEAD_SIZE + SHM_DATA_SIZE;
 
     // set the init state
-    uint64_t shm_sync_flag = SHM_FLAG_UNLOCK;
     atomic_write<uint64_t>(shm_in_proc, SHM_FLAG_UNLOCK);
     sleep(5);
 
@@ -216,7 +214,7 @@ int share_memory_demo_client()
     TARGET_RELEASE:
 
     munmap(shm_in_proc, SHM_SIZE);
-    shm_unlink(SHM_NAME);
+    shm_unlink(IPC_SHM_NAME);
 
     std::cout << "Unmap share memory and release it " << getpid() << std::endl;
 
