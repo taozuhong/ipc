@@ -1,6 +1,8 @@
 #include <iostream>
 #include "ipc_pipe.h"
 #include "ipc_shm.h"
+#include "ipc_signal.h"
+#include "ipc_message.h"
 #include "ipc_comm.h"
 
 #define STRIP_FLAG_HELP 1
@@ -11,6 +13,8 @@ DEFINE_bool(h, false, "Show help");
 DEFINE_bool(shm, false, "Enter share memory mode");
 DEFINE_bool(pipe, false, "Enter pipe mode(anony pipe)");
 DEFINE_bool(fifo, false, "Enter fifo mode(named pipe)");
+DEFINE_bool(signal, false, "Enter signal mode");
+DEFINE_bool(msg, false, "Enter message queue mode");
 
 int main(int argc, char * argv[]) {
     gflags::SetVersionString("0.1");
@@ -29,6 +33,17 @@ int main(int argc, char * argv[]) {
     if (FLAGS_fifo) {
         ret_val = named_pipe_demo_client();
     }
+
+    if (FLAGS_signal)
+    {
+        ret_val = ipc_signal_demo();
+    }
+
+    if (FLAGS_msg)
+    {
+        ret_val = ipc_message_demo_client();
+    }
+
 
     return ret_val;
 }

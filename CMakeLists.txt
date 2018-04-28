@@ -22,6 +22,10 @@ add_executable(ipcv
         src/ipc_shm.cc
         src/ipc_pipe.h
         src/ipc_pipe.cc
+        src/ipc_signal.h
+        src/ipc_signal.cc
+        src/ipc_message.h
+        src/ipc_message.cc
         src/ipc_server.cc)
 
 
@@ -31,6 +35,10 @@ add_executable(ipcc
         src/ipc_shm.cc
         src/ipc_pipe.h
         src/ipc_pipe.cc
+        src/ipc_signal.h
+        src/ipc_signal.cc
+        src/ipc_message.h
+        src/ipc_message.cc
         src/ipc_client.cc)
 
 TARGET_LINK_LIBRARIES(ipcv rt gflags)
