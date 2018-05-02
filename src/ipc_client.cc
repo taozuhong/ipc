@@ -13,7 +13,7 @@ DEFINE_bool(h, false, "Show help");
 DEFINE_bool(shm, false, "Enter share memory mode");
 DEFINE_bool(pipe, false, "Enter pipe mode(anony pipe)");
 DEFINE_bool(fifo, false, "Enter fifo mode(named pipe)");
-DEFINE_bool(signal, false, "Enter signal mode");
+DEFINE_int32(signal, 1024, "Enter signal mode");
 DEFINE_bool(msg, false, "Enter message queue mode");
 
 int main(int argc, char * argv[]) {
@@ -36,7 +36,7 @@ int main(int argc, char * argv[]) {
 
     if (FLAGS_signal)
     {
-        ret_val = ipc_signal_demo();
+        ret_val = ipc_signal_demo(FLAGS_signal);
     }
 
     if (FLAGS_msg)

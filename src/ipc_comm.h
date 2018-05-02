@@ -3,6 +3,7 @@
 
 #include <sys/types.h>
 #include <cstdint>
+#include <iostream>
 
 
 const char     App_Usage[] =
@@ -15,7 +16,7 @@ OPTIONS: \n\
 -shm             Enter share memory mode\n\
 -pipe            Enter pipe mode(anony pipe)\n\
 -fifo            Enter fifo mode(named pipe)\n\
--signal          Enter signal mode\n\
+-signal          Enter signal mode(1-none;2-args;3-customize)\n\
 -msg             Enter message mode\n\
 \n\
 Welcome to contribute and share with your friends.";
