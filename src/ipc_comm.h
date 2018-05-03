@@ -26,17 +26,21 @@ const char      SHM_SVR_TEXT[] = "SERVER: 在这之前，我们可以从中兴�
 const char      SHM_CLT_TEXT[] = "CLIENT: 通用电气公司（GE）可以存续百年，不是仅仅因为公司拥有先进的技术或管理，更是因为公司优秀的企业文化，其中最重要的是以诚信与合规作为公司的文化，GE将合规作为企业发展的基石。首先，GE将诚信合规定义成为企业的文化，该公司的核心价值观就是诚信。GE要求公司的领导层不仅要为他们的行为负责，还要为企业培育合规诚信的文化负责。其次，GE将诚信(integrity)作为合规的主要含义。GE不仅仅满足于遵守法律法规，而是要以诚信为原则开展业务。除了遵守法律法规外，GE还要求员工不能欺骗商业伙伴或违反商业道德，即使这些商业道德并不属于法律管辖的范围。第三，GE永远要走在法律法规管制的前面。GE不是简单地应对法律法规，不是被动地守法，而是更加主动地超越法律的要求来要求自己，而不是触犯了法律被惩罚以后才去做合规。另外，作为一家在全球开展业务的公司，GE面临着来自全球不同国家和地区的法律法规的监管，必须以最高的标准来要求自己，不能因为某个国家或者某个地区的标准低就降低公司在该国家或者地区的合规标准。第四，GE把主动合规作为合规工作的主要目标。GE强调合规经营，不仅仅是为了避免相应的处罚措施，更是要在全球竞争下打造企业的核心竞争力，不要做只会赚钱的公司。GE把主动的守法当作合规管理的主要目标，因此，对合规经营认识就比一般的公司更为深刻。";
 
 
-const int64_t   SHM_SIZE = 1024 * 1024 * 16;
 const char      IPC_SHM_NAME[] = "/ipc_test_first";
 const char      IPC_PIPE_SVR_READ[] = "/tmp/ipc_pipe_read";
 const char      IPC_PIPE_SVR_WRITE[] = "/tmp/ipc_pipe_write";
-const uint32_t  IPC_PIPE_PERMISSION = 0666;         // all: read + write
+const char      IPC_MESSAGE_QUEUE_CLIENT[] = "/ipc_msg_queue_client";
+const char      IPC_MESSAGE_QUEUE_SERVER[] = "/ipc_msg_queue_server";
+const uint32_t  IPC_FILE_PERMISSION = 0666;         // all: read + write
+
 
 const char      SHM_HEAD_SIZE = 8;
 const char      SHM_DATA_SIZE = 8;
+const int64_t   SHM_SIZE = 1024 * 1024 * 16;
 const uint64_t  SHM_FLAG_LOCK = 0xFFFFFFFFFFFFFFFF;
 const uint64_t  SHM_FLAG_UNLOCK = 0xEEEEEEEEEEEEEEEE;
 const uint64_t  SHM_FLAG_RELEASE = 0xAAAAAAAAAAAAAAAA;
+const uint64_t  IPC_MESSAGE_SIZE = 4096;
 const uint8_t   PIPE_STDIN = 0;
 const uint8_t   PIPE_STDOUT = 1;
 

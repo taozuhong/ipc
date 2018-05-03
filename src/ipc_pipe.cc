@@ -57,7 +57,7 @@ int anonymous_pipe_demo()
 
         // read data from parent
         char pipe_buff[4096] = {0};
-        while (0 == read(pipe_write_to_child[0],pipe_buff, 4096));
+        while (0 == read(pipe_write_to_child[0], pipe_buff, 4096));
 
         std::cout << "I'm child, read data from parent: " << getpid() << std::endl;
         std::cout << pipe_buff << std::endl << std::endl;
@@ -79,13 +79,13 @@ int anonymous_pipe_demo()
 int named_pipe_demo_server()
 {
     // create duplex named pipe
-    if((mkfifo(IPC_PIPE_SVR_WRITE, IPC_PIPE_PERMISSION ) < 0) && ( errno != EEXIST)) {
+    if((mkfifo(IPC_PIPE_SVR_WRITE, IPC_FILE_PERMISSION ) < 0) && ( errno != EEXIST)) {
         std::cerr << "Can't create named pipe(fifo): " << IPC_PIPE_SVR_WRITE << ", error: " << strerror(errno) << " <-- " << getpid() << std::endl;
         return  -1;
     }
     std::cout << "Create named pipe(fifo) success: " << IPC_PIPE_SVR_WRITE << " <-- " << getpid() << std::endl;
 
-    if((mkfifo(IPC_PIPE_SVR_READ, IPC_PIPE_PERMISSION ) < 0) && ( errno != EEXIST)) {
+    if((mkfifo(IPC_PIPE_SVR_READ, IPC_FILE_PERMISSION ) < 0) && ( errno != EEXIST)) {
         std::cerr << "Can't create named pipe(fifo): " << IPC_PIPE_SVR_READ << ", error: " << strerror(errno) << " <-- " << getpid() << std::endl;
         return  -2;
     }
