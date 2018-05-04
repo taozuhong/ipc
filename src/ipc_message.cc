@@ -29,22 +29,22 @@ int ipc_message_demo_server()
     mode_t old_mask;
     old_mask = umask(0);
     PRINT_ADD("Create message queue: ") << IPC_MESSAGE_QUEUE_SERVER << " ...";
-    mqd_t mq_server = mq_open(IPC_MESSAGE_QUEUE_SERVER, O_CREAT | O_WRONLY /*| O_NONBLOCK*/, IPC_FILE_PERMISSION, &attr);
+    mqd_t mq_server = mq_open(IPC_MESSAGE_QUEUE_SERVER, O_CREAT | O_WRONLY | O_NONBLOCK, IPC_FILE_PERMISSION, &attr);
     if (-1 == mq_server)
     {
         PRINT_END("[failed]: ");
-        PRINT(strerror(errno));
+        PRINT_ADD(strerror(errno)) << std::endl;
         umask(old_mask);
         return  -1;
     }
     PRINT_END("[done]");
 
     PRINT_ADD("Create message queue: ") << IPC_MESSAGE_QUEUE_CLIENT << " ...";
-    mqd_t mq_client = mq_open(IPC_MESSAGE_QUEUE_CLIENT, O_CREAT | O_RDONLY /*| O_NONBLOCK*/, IPC_FILE_PERMISSION, &attr);
+    mqd_t mq_client = mq_open(IPC_MESSAGE_QUEUE_CLIENT, O_CREAT | O_RDONLY | O_NONBLOCK, IPC_FILE_PERMISSION, &attr);
     if (-1 == mq_client)
     {
         PRINT_END("[failed]: ");
-        PRINT(strerror(errno));
+        PRINT_ADD(strerror(errno)) << std::endl;
         umask(old_mask);
         return  -2;
     }
@@ -58,12 +58,20 @@ int ipc_message_demo_server()
     ssize_t bytes_send = 0;
     char msg_buffer[IPC_MESSAGE_SIZE + 1] = {0};
     while  (true) {
+        PRINT_ADD("Send message into queue: ") << IPC_MESSAGE_QUEUE_SERVER << std::flush;
         bytes_send = mq_send(mq_server, SHM_SVR_TEXT, sizeof(SHM_SVR_TEXT), 0);
-        if (0 < bytes_send) {
-            PRINT("Send message into queue success. ");
-        } else if (0 > bytes_send) {
-            PRINT(strerror(errno));
-            PRINT("Send message into queue failed. ");
+        if (0 <= bytes_send) {
+            PRINT_END("[done]. ");
+        }
+        else if ((0 > bytes_send) && (EAGAIN == errno))
+        {
+            PRINT_END("[full, try again]");
+            usleep(1000);
+        }
+        else
+        {
+            PRINT_END("[failed]: ");
+            PRINT_ADD(strerror(errno)) << std::endl;
             break;
         }
 
@@ -72,11 +80,17 @@ int ipc_message_demo_server()
         bytes_read = mq_receive(mq_client, msg_buffer, sizeof(msg_buffer), NULL);
         if (0 < bytes_read)
         {
-            PRINT("Read message from queue: ") << std::endl;
-            PRINT_ADD(msg_buffer) << std::endl;
-        } else if (0 > bytes_read) {
-            PRINT(strerror(errno));
-            PRINT("Read message from queue failed. ");
+            PRINT("Read message from queue: ");
+            PRINT_ADD(msg_buffer) << std::endl << std::endl;
+        }
+        else if ((0 > bytes_read) && (EAGAIN == errno))
+        {
+            PRINT("Read message from queue...[empty, try again].");
+        }
+        else
+        {
+            PRINT("Read message from queue failed: ");
+            PRINT_ADD(strerror(errno)) << std::endl;
             break;
         }
 
@@ -124,21 +138,21 @@ int ipc_message_demo_client()
 
     /* create the message queue */
     PRINT_ADD("Create message queue: ") << IPC_MESSAGE_QUEUE_SERVER << " ...";
-    mqd_t mq_server = mq_open(IPC_MESSAGE_QUEUE_SERVER, O_RDONLY /*| O_NONBLOCK*/, IPC_FILE_PERMISSION, &attr);
+    mqd_t mq_server = mq_open(IPC_MESSAGE_QUEUE_SERVER, O_RDONLY | O_NONBLOCK, IPC_FILE_PERMISSION, &attr);
     if (-1 == mq_server)
     {
-        PRINT_ADD("[failed]: ") << std::endl;
-        PRINT(strerror(errno));
+        PRINT_END("[failed]: ");
+        PRINT_ADD(strerror(errno)) << std::endl;
         return  -1;
     }
     PRINT_END("[done]");
 
     PRINT_ADD("Create message queue: ") << IPC_MESSAGE_QUEUE_CLIENT << " ...";
-    mqd_t mq_client = mq_open(IPC_MESSAGE_QUEUE_CLIENT, O_WRONLY /*| O_NONBLOCK*/, IPC_FILE_PERMISSION, &attr);
+    mqd_t mq_client = mq_open(IPC_MESSAGE_QUEUE_CLIENT, O_WRONLY | O_NONBLOCK, IPC_FILE_PERMISSION, &attr);
     if (-1 == mq_client)
     {
-        PRINT_ADD("[failed]: ") << std::endl;
-        PRINT(strerror(errno));
+        PRINT_END("[failed]: ");
+        PRINT_ADD(strerror(errno)) << std::endl;
         return  -2;
     }
     PRINT_END("[done]");
@@ -152,34 +166,31 @@ int ipc_message_demo_client()
         bytes_read = mq_receive(mq_server, msg_buffer, sizeof(msg_buffer), NULL);
         if (0 < bytes_read)
         {
-            PRINT("Read message from queue: ") << std::endl;
-            PRINT_ADD(msg_buffer) << std::endl;
-        } else if (0 > bytes_read) {
-            PRINT("Read message from queue failed. ");
-            break;
+            PRINT("Read message from queue: ");
+            PRINT_ADD(msg_buffer) << std::endl << std::endl;
         }
-
-        bytes_send = mq_send(mq_client, SHM_CLT_TEXT, sizeof(SHM_CLT_TEXT), 0);
-        if (0 < bytes_send) {
-            PRINT("Send message into queue success. ");
-        } else if (0 > bytes_send) {
-            PRINT(strerror(errno));
-            PRINT("Send message into queue failed. ");
-            break;
-        }
-
-        // Choose path by user input char
-        std::cout << "Wait user input to choose path: " << getpid() << std::endl;
-        switch(getchar())
+        else if ((0 > bytes_read) && (EAGAIN != errno))
         {
-            case 'q':
-            case 'Q':
-                goto TARGET_RELEASE;
-                break;
-
-            default:
-                break;
+            PRINT("Read message from queue failed: ");
+            PRINT_ADD(strerror(errno)) << std::endl;
+            break;
         }
+
+        PRINT_ADD("Send message into queue: ") << IPC_MESSAGE_QUEUE_CLIENT << std::flush;
+        bytes_send = mq_send(mq_client, SHM_CLT_TEXT, sizeof(SHM_CLT_TEXT), 0);
+        if (0 <= bytes_send) {
+            PRINT_END("[done]");
+        }
+        else if ((0 > bytes_send) && (EAGAIN != errno))
+        {
+            PRINT_END("[failed]: ");
+            PRINT_ADD(strerror(errno)) << std::endl;
+            break;
+        } else {
+            PRINT_END("[full, try again]");
+        }
+
+        sleep(5);
     }
 
 
